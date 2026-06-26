@@ -1,0 +1,41 @@
+{
+  "role": "ai_engineer",
+  "title": "Senior AI Engineer",
+  "experience_requirements": {
+    "ideal_min": 5,
+    "ideal_max": 9,
+    "good_min": 4,
+    "good_max": 10,
+    "acceptable_min": 3,
+    "acceptable_max": 12
+  },
+  "required_skills": [
+    "sentence-transformers",
+    "embeddings",
+    "vector search",
+    "vector database",
+    "rag",
+    "nlp",
+    "python",
+    "information retrieval",
+    "semantic search"
+  ],
+  "preferred_skills": [
+    "lora",
+    "qlora",
+    "peft",
+    "fine-tuning",
+    "xgboost",
+    "distributed systems"
+  ],
+  "scoring_weights": {
+    "title": 0.20,
+    "skill": 0.22,
+    "career": 0.18,
+    "experience": 0.12,
+    "behavioral": 0.10,
+    "location": 0.08,
+    "notice": 0.06,
+    "trust": 0.04
+  }
+}

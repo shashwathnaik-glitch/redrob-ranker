@@ -1,0 +1,13 @@
+# Metadata for Redrob AI Candidate Ranking System Submission
+submission_name: redrob_ranker
+version: 1.0.0
+description: "AI Candidate Ranking System for Senior AI Engineer JD at Redrob AI"
+author: "Developer"
+constraints:
+  cpu_only: true
+  max_runtime_minutes: 5
+  max_ram_gb: 16
+  python_version: "3.10+"
+outputs:
+  csv: "outputs/submission.csv"
+  json: "outputs/ranked_candidates.json"

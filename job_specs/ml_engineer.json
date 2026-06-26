@@ -1,0 +1,50 @@
+{
+  "role": "ml_engineer",
+  "title": "Senior Machine Learning Engineer",
+  "experience_requirements": {
+    "ideal_min": 5,
+    "ideal_max": 9,
+    "good_min": 4,
+    "good_max": 10,
+    "acceptable_min": 3,
+    "acceptable_max": 12
+  },
+  "required_skills": [
+    "python",
+    "pytorch",
+    "tensorflow",
+    "scikit-learn",
+    "numpy",
+    "pandas",
+    "mlops",
+    "deep learning",
+    "neural networks",
+    "machine learning"
+  ],
+  "preferred_skills": [
+    "c++",
+    "jax",
+    "keras",
+    "xgboost",
+    "lightgbm",
+    "mlflow",
+    "kubeflow",
+    "dvc",
+    "wandb",
+    "triton",
+    "tensorrt",
+    "onnx",
+    "model quantization",
+    "cuda"
+  ],
+  "scoring_weights": {
+    "title": 0.22,
+    "skill": 0.24,
+    "career": 0.16,
+    "experience": 0.12,
+    "behavioral": 0.10,
+    "location": 0.06,
+    "notice": 0.06,
+    "trust": 0.04
+  }
+}

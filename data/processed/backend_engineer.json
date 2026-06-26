@@ -1,0 +1,49 @@
+{
+  "role": "backend_engineer",
+  "title": "Senior Backend Engineer",
+  "experience_requirements": {
+    "ideal_min": 6,
+    "ideal_max": 10,
+    "good_min": 5,
+    "good_max": 12,
+    "acceptable_min": 4,
+    "acceptable_max": 15
+  },
+  "required_skills": [
+    "python",
+    "go",
+    "java",
+    "sql",
+    "postgresql",
+    "nosql",
+    "redis",
+    "rest api",
+    "grpc",
+    "graphql",
+    "fastapi",
+    "django",
+    "docker",
+    "kubernetes",
+    "microservices",
+    "system design",
+    "distributed systems"
+  ],
+  "preferred_skills": [
+    "rust",
+    "aws",
+    "gcp",
+    "ci/cd",
+    "concurrency",
+    "spring boot"
+  ],
+  "scoring_weights": {
+    "title": 0.20,
+    "skill": 0.25,
+    "career": 0.15,
+    "experience": 0.12,
+    "behavioral": 0.10,
+    "location": 0.08,
+    "notice": 0.06,
+    "trust": 0.04
+  }
+}

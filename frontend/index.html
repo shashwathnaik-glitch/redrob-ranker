@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Redrob Candidate Intelligence Dashboard</title>
+    <!-- Tailwind CSS with forms and container queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Inter (Body), Outfit (Headings), Sora (Numbers/Display) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=Sora:wght@600;700;800;900&display=swap" rel="stylesheet"/>
+    <!-- Material Symbols for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: "#0F172A", // Sidebar background color requirement
+                            900: "#090d16", // Main content area background
+                            800: "#161f32", // Lighter surface
+                            700: "#1e293b", // Border/hover
+                            600: "#334155"
+                        },
+                        purple: {
+                            DEFAULT: "#7c3aed",
+                            600: "#6d28d9",
+                            500: "#7c3aed",
+                            400: "#a78bfa",
+                            300: "#c4b5fd"
+                        }
+                    },
+                    fontFamily: {
+                        display: ["Outfit", "Sora", "sans-serif"],
+                        body: ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090d16;
+            color: #f1f5f9;
+        }
+        
+        h1, h2, h3, h4, h5, h6, .display-font, .font-display {
+            font-family: 'Outfit', 'Sora', sans-serif;
+        }
+
+        aside {
+            background-color: #0F172A !important;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Sidebar track scroll customization */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 9999px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Score bar animation and gradients */
+        .score-bar-fill {
+            width: 0;
+        }
+
+        /* Card elevate effect */
+        .candidate-card {
+            background-color: #131929 !important;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: opacity 0.4s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                        box-shadow 0.3s ease, 
+                        border-color 0.3s ease;
+        }
+
+        .card-border-top-10 {
+            border-left: 3px solid #7c3aed !important;
+        }
+        .card-border-top-50 {
+            border-left: 3px solid #3b82f6 !important;
+        }
+        .card-border-rest {
+            border-left: 3px solid transparent !important;
+        }
+
+        /* Premium glowing effects */
+        .purple-accent-glow {
+            filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.4));
+        }
+
+        /* Rank Badge CSS */
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(234, 179, 8, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+        }
+        @keyframes pulse-silver {
+            0% { box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(148, 163, 184, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(148, 163, 184, 0); }
+        }
+        @keyframes pulse-bronze {
+            0% { box-shadow: 0 0 0 0 rgba(180, 83, 9, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(180, 83, 9, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(180, 83, 9, 0); }
+        }
+
+        .rank-badge-1 {
+            background: linear-gradient(135deg, #fde047 0%, #eab308 100%) !important;
+            color: #1e293b !important;
+            border: 1px solid #fef08a !important;
+            animation: pulse-gold 2s infinite ease-in-out;
+        }
+        .rank-badge-2 {
+            background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%) !important;
+            color: #1e293b !important;
+            border: 1px solid #ffffff !important;
+            animation: pulse-silver 2s infinite ease-in-out;
+        }
+        .rank-badge-3 {
+            background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid #fcd34d !important;
+            animation: pulse-bronze 2s infinite ease-in-out;
+        }
+        .rank-badge-top-10 {
+            background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid #c4b5fd !important;
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.4) !important;
+        }
+        .rank-badge-rest {
+            background: #334155 !important;
+            color: #94a3b8 !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        /* Warning animated pulse for risk assessment */
+        @keyframes pulse-warning {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
+            }
+            50% {
+                transform: scale(1.03);
+                opacity: 0.8;
+                box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+            }
+        }
+        .pulse-warning-element {
+            animation: pulse-warning 2.5s infinite ease-in-out;
+        }
+
+        /* Radial progress circle styling */
+        .radial-progress-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .radial-bg {
+            stroke: rgba(255, 255, 255, 0.05);
+        }
+        .radial-bar {
+            stroke-linecap: round;
+        }
+        .radial-glow-back {
+            position: absolute;
+            width: 130%;
+            height: 130%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Focus states for keyboard accessibility */
+        .focusable:focus-visible {
+            outline: 2px solid #7c3aed;
+            outline-offset: 2px;
+        }
+
+        /* View Profile Arrow Slide */
+        .view-profile-btn .view-profile-arrow {
+            display: inline-block;
+            transition: transform 200ms ease-in-out;
+        }
+
+        /* Skills pill dynamic card layout */
+        .skill-pill-card {
+            height: 2rem; /* 32px */
+            overflow: hidden;
+            border-radius: 0.75rem;
+            position: relative;
+        }
+        .skill-pill-inner {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Reasoning text styling and expand on hover */
+        .candidate-reasoning {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: max-height 0.3s ease-out;
+            max-height: 2.8rem;
+        }
+        .candidate-card:hover .candidate-reasoning {
+            -webkit-line-clamp: unset;
+            max-height: 10rem;
+        }
+
+        #drawer-overlay {
+            background-color: rgba(9, 13, 22, 0.7);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+        }
+        #drawer-overlay.active {
+            opacity: 1;
+        }
+
+        /* Transitions and keyframes for reduced motion settings */
+        @keyframes fill-bar {
+            from { width: 0; }
+            to { width: var(--target-width); }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .score-bar-fill-animated {
+                animation: fill-bar 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            .candidate-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 12px 30px rgba(124, 58, 237, 0.12);
+                border-color: rgba(124, 58, 237, 0.3);
+            }
+            .candidate-card:hover .view-profile-arrow {
+                transform: translateX(4px);
+            }
+            .skill-pill-inner {
+                transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .skill-pill-card:hover .skill-pill-inner {
+                transform: translateY(-2rem);
+            }
+            #progress-ring {
+                transition: stroke-dashoffset 500ms ease-out;
+            }
+            #candidate-drawer {
+                transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+            }
+            #drawer-overlay {
+                transition: opacity 200ms ease-out;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .score-bar-fill-animated {
+                width: var(--target-width) !important;
+            }
+            .candidate-card:hover {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .view-profile-btn:hover .view-profile-arrow {
+                transform: none !important;
+            }
+            .skill-pill-card:hover .skill-pill-inner {
+                transform: none !important;
+            }
+            #progress-ring {
+                transition: none !important;
+            }
+            #candidate-drawer {
+                transition: none !important;
+            }
+            #drawer-overlay {
+                transition: none !important;
+            }
+            .pulse-warning-element {
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="overflow-hidden flex flex-col h-screen">
+
+<!-- Top Header -->
+<header class="h-16 border-b border-navy-700 bg-navy-950 flex items-center justify-between px-6 z-40">
+    <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+            <span class="material-symbols-outlined text-white font-bold" style="font-variation-settings: 'FILL' 1;">analytics</span>
+        </div>
+        <div>
+            <h1 class="text-xl font-black text-white tracking-tight leading-none">Redrob AI</h1>
+            <p class="text-[9px] uppercase tracking-[0.2em] text-purple-300 font-bold">Candidate Intelligence</p>
+        </div>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="hidden md:flex flex-1 max-w-xl mx-8 relative items-center">
+        <span class="material-symbols-outlined absolute left-3.5 text-slate-400">search</span>
+        <input id="search-input" class="w-full bg-navy-800 border border-navy-700 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:border-purple focus:ring-1 focus:ring-purple focus:outline-none transition-all focus:shadow-lg focus:shadow-purple/5" placeholder="Search candidates by name, title, skills..." type="text"/>
+    </div>
+    
+    <div class="flex items-center gap-4">
+        <button id="export-csv-btn" class="focusable flex items-center gap-2 bg-gradient-to-r from-purple to-indigo-600 hover:from-purple hover:to-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-lg shadow-purple/20 active:scale-95">
+            <span class="material-symbols-outlined text-[16px]">download</span>
+            Export CSV
+        </button>
+        <div class="w-9 h-9 rounded-full ring-2 ring-purple-500/30 overflow-hidden border border-navy-950">
+            <img alt="User profile" class="w-full h-full object-cover" src="https://api.dicebear.com/7.x/bottts/svg?seed=admin"/>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <!-- Left Navigation/Filter Drawer (Sidebar) -->
+    <aside class="w-sidebar-width bg-navy-950 border-r border-navy-700 flex flex-col py-6 gap-6 z-30 sidebar-scroll overflow-y-auto hidden md:flex shrink-0 w-64">
+        <div class="px-6 flex justify-between items-center">
+            <div>
+                <h2 class="text-xs uppercase tracking-[0.15em] text-slate-400 font-bold mb-1">Filters</h2>
+                <p class="text-[11px] text-slate-500">Refine intelligence pool</p>
+            </div>
+            <button id="clear-all-filters-btn" class="text-[10px] font-bold text-purple-400 hover:text-purple-300 transition-colors uppercase tracking-wider focus:outline-none cursor-pointer">
+                Clear all
+            </button>
+        </div>
+        
+        <!-- Job Role Selector -->
+        <div class="px-6 flex flex-col gap-2">
+            <div class="flex justify-between items-center">
+                <label class="text-xs text-slate-300 font-medium" for="role-select">Job Role</label>
+                <span id="role-loading-indicator" class="hidden">
+                    <svg class="animate-spin w-3 h-3 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                    </svg>
+                </span>
+            </div>
+            <select id="role-select" class="bg-navy-800 border border-purple-500/40 rounded-lg text-white text-xs px-3 py-2.5 focus:border-purple focus:ring-0 focus:outline-none cursor-pointer font-semibold transition-all hover:border-purple-400/60">
+                <option value="ai_engineer">AI Engineer</option>
+            </select>
+            <p class="text-[10px] text-slate-500 -mt-1">Reranks all candidates for the selected role</p>
+            <div class="flex items-center gap-1.5 mt-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20" id="active-role-badge">
+                    Ranking for: AI Engineer
+                </span>
+            </div>
+        </div>
+
+        <div class="px-6 flex flex-col gap-6">
+            <!-- Score Slider -->
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-center text-xs">
+                    <label class="text-slate-300 font-medium">Match Score</label>
+                    <span id="score-val-label" class="text-purple-300 font-black">80%+</span>
+                </div>
+                <input id="score-slider" class="w-full h-1.5 bg-navy-800 rounded-lg appearance-none cursor-pointer accent-purple-500" max="100" min="0" type="range" value="80"/>
+            </div>
+            
+            <!-- Experience -->
+            <div class="flex flex-col gap-2">
+                <label class="text-xs text-slate-300 font-medium">Experience (Years)</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="exp-min" class="bg-navy-800 border border-navy-700 rounded-lg text-white text-xs px-3 py-2 focus:border-purple focus:ring-0 focus:outline-none" placeholder="Min" type="number"/>
+                    <input id="exp-max" class="bg-navy-800 border border-navy-700 rounded-lg text-white text-xs px-3 py-2 focus:border-purple focus:ring-0 focus:outline-none" placeholder="Max" type="number"/>
+                </div>
+            </div>
+            
+            <!-- Notice Period -->
+            <div class="flex flex-col gap-2">
+                <label class="text-xs text-slate-300 font-medium">Notice Period</label>
+                <select id="notice-select" class="bg-navy-800 border border-navy-700 rounded-lg text-white text-xs px-3 py-2 focus:border-purple focus:ring-0 focus:outline-none cursor-pointer">
+                    <option value="all">Any Notice Period</option>
+                    <option value="0">Immediate Joiner (0-1d)</option>
+                    <option value="15">Max 15 Days</option>
+                    <option value="30">Max 30 Days</option>
+                    <option value="60">Max 60 Days</option>
+                </select>
+            </div>
+            
+            <!-- India Only Toggle -->
+            <div class="flex items-center justify-between p-3.5 rounded-xl bg-navy-800/40 border border-navy-800">
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-200 font-medium">India Only</span>
+                    <span class="text-[9px] text-slate-400">Filter local talent</span>
+                </div>
+                <button id="india-toggle" class="w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                    <span class="absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all" id="india-dot"></span>
+                </button>
+            </div>
+            
+            <!-- Open to Work -->
+            <div class="flex items-center justify-between p-3.5 rounded-xl bg-navy-800/40 border border-navy-800">
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-200 font-medium">Open to Work</span>
+                    <span class="text-[9px] text-slate-400">Verified status only</span>
+                </div>
+                <button id="otw-toggle" class="w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                    <span class="absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all" id="otw-dot"></span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Sorting Panel -->
+        <div class="mt-4 border-t border-navy-700/50 pt-6 px-6 flex flex-col gap-3">
+            <h3 class="text-xs uppercase tracking-[0.15em] text-slate-400 font-bold mb-1">Sorting</h3>
+            <select id="sort-select" class="bg-navy-800 border border-navy-700 rounded-lg text-white text-xs px-3 py-2 focus:border-purple focus:ring-0 focus:outline-none cursor-pointer">
+                <option value="rank">Best Match Rank</option>
+                <option value="experience">Experience (Highest)</option>
+                <option value="notice">Notice Period (Shortest)</option>
+            </select>
+        </div>
+    </aside>
+    
+    <!-- Main Workspace -->
+    <main class="flex-1 overflow-y-auto bg-navy-900 p-6 md:p-8 pb-24 relative custom-scroll">
+        <div class="max-w-5xl mx-auto">
+            <!-- Header section inside Main -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white tracking-tight leading-tight">AI Ranked Candidate Intelligence</h2>
+                    <p class="text-sm text-slate-400 mt-1">
+                        Showing <span id="candidate-count" class="text-purple-300 font-bold">0</span> matched profiles for <span id="role-label-display" class="text-white font-semibold">AI Engineer</span>.
+                    </p>
+                </div>
+                <div class="md:hidden flex gap-2">
+                    <!-- Mobile search bar -->
+                    <input id="mobile-search" class="w-full bg-navy-800 border border-navy-700 rounded-lg text-xs text-white px-3 py-2 focus:outline-none focus:border-purple" placeholder="Search..." type="text"/>
+                </div>
+            </div>
+            
+            <!-- Candidate Cards List -->
+            <div class="flex flex-col gap-4" id="candidate-list">
+                <!-- Skeleton Loader -->
+                <div class="animate-pulse flex flex-col gap-4">
+                    <div class="h-32 bg-navy-800/50 border border-navy-700/30 rounded-2xl"></div>
+                    <div class="h-32 bg-navy-800/50 border border-navy-700/30 rounded-2xl"></div>
+                    <div class="h-32 bg-navy-800/50 border border-navy-700/30 rounded-2xl"></div>
+                </div>
+            </div>
+
+            <!-- Empty state (hidden by default) -->
+            <div id="empty-state" class="hidden flex flex-col gap-3 justify-center items-center py-20 text-slate-500 border border-dashed border-navy-700 rounded-2xl bg-navy-800/10">
+                <span class="material-symbols-outlined text-4xl text-slate-500">search_off</span>
+                <p class="text-sm font-semibold text-slate-300">No candidates match these filters</p>
+                <p class="text-xs text-slate-500">Adjust the score threshold, experience limits, or notice status.</p>
+                <button id="empty-clear-btn" class="mt-4 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Mobile Bottom Navigation (Visible on Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-navy-950 border-t border-navy-700 flex justify-around items-center py-2.5 z-40 shadow-xl">
+    <button class="flex flex-col items-center gap-1 text-purple" id="mobile-nav-list">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="text-[9px] font-bold">Candidates</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 text-slate-400" id="mobile-nav-filters">
+        <span class="material-symbols-outlined">filter_list</span>
+        <span class="text-[9px] font-bold">Filters</span>
+    </button>
+</nav>
+
+<!-- Mobile Filters Modal overlay -->
+<div id="mobile-filters-modal" class="fixed inset-0 bg-navy-950/80 backdrop-blur-sm z-50 flex items-end justify-center hidden">
+    <div class="bg-navy-900 border-t border-navy-700 w-full rounded-t-3xl max-h-[85vh] overflow-y-auto p-6 flex flex-col gap-6">
+        <div class="flex justify-between items-center border-b border-navy-800 pb-3">
+            <h3 class="text-lg font-bold text-white">Filters</h3>
+            <button id="close-mobile-filters" class="text-slate-400 hover:text-white p-1">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <!-- Render Sidebar Filters Dynamically Inside Mobile Modal in JS -->
+        <div id="mobile-filters-container" class="flex flex-col gap-6"></div>
+    </div>
+</div>
+
+<!-- Backdrop Overlay for Candidate Drawer -->
+<div id="drawer-overlay" class="fixed inset-0 z-40 hidden"></div>
+
+<!-- RIGHT SLIDE-IN PANEL (Candidate Details Drawer) -->
+<div class="fixed right-0 top-0 h-full w-full sm:w-[500px] md:w-[540px] bg-navy-900 border-l border-navy-700 z-50 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full overflow-hidden" id="candidate-drawer" role="dialog" aria-modal="true" aria-labelledby="detail-name" tabindex="-1">
+    <!-- Header -->
+    <header class="flex flex-col border-b border-navy-800 bg-navy-950 p-6 relative">
+        <div class="flex justify-between items-center mb-6">
+            <button class="focusable text-slate-400 hover:text-white transition-colors p-2 hover:bg-navy-800 rounded-xl" id="close-drawer" aria-label="Close details drawer">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="flex gap-2">
+                <span id="detail-rank-badge" class="px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider select-none">#1 Match</span>
+            </div>
+        </div>
+        
+        <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl border border-purple-500/20 bg-navy-800 p-0.5 relative shadow-md">
+                    <img class="w-full h-full rounded-xl object-cover" id="detail-avatar" src="" alt="Candidate Avatar"/>
+                    <!-- Pulse indicator for relocation willingness -->
+                    <div class="absolute -bottom-1 -right-1 w-5 h-5 border-2 border-navy-950 rounded-full flex items-center justify-center shadow-lg" id="detail-willing-badge">
+                        <span class="w-2.5 h-2.5 rounded-full" id="detail-willing-dot"></span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-display text-2xl font-extrabold text-white leading-tight tracking-tight" id="detail-name">Marcus Chen</h3>
+                    <p class="text-sm text-slate-300 font-medium mt-0.5" id="detail-title">Lead Software Engineer</p>
+                    <p class="text-xs text-slate-400 font-semibold mt-0.5" id="detail-company">at TechFlow</p>
+                    <div class="flex items-center gap-1.5 mt-2 text-purple-400 font-semibold text-xs">
+                        <span class="material-symbols-outlined text-[15px]">location_on</span>
+                        <span id="detail-location">Pune, India</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Massive Score Circular Focal Moment -->
+            <div class="flex flex-col items-center radial-progress-container shrink-0">
+                <div class="radial-glow-back"></div>
+                <div class="relative w-20 h-20 flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle class="radial-bg" cx="40" cy="40" fill="transparent" r="34" stroke-width="5.5"></circle>
+                        <circle class="radial-bar transition-all" cx="40" cy="40" fill="transparent" id="progress-ring" r="34" stroke-dasharray="213.63" stroke-dashoffset="213.63" stroke-width="5.5"></circle>
+                        <defs>
+                            <linearGradient id="gradient-green" x1="0%" x2="100%" y1="0%" y2="100%">
+                                <stop offset="0%" stop-color="#10B981"></stop>
+                                <stop offset="100%" stop-color="#34D399"></stop>
+                            </linearGradient>
+                            <linearGradient id="gradient-amber" x1="0%" x2="100%" y1="0%" y2="100%">
+                                <stop offset="0%" stop-color="#F59E0B"></stop>
+                                <stop offset="100%" stop-color="#FBBF24"></stop>
+                            </linearGradient>
+                            <linearGradient id="gradient-red" x1="0%" x2="100%" y1="0%" y2="100%">
+                                <stop offset="0%" stop-color="#EF4444"></stop>
+                                <stop offset="100%" stop-color="#F87171"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="absolute font-display text-xl font-black tracking-tight text-purple-400" id="detail-score">94%</span>
+                </div>
+                <span class="text-[9px] font-black text-purple-400/80 mt-1.5 uppercase tracking-[0.2em] font-display">Match</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Pipeline Status Strip -->
+    <div class="px-6 py-3.5 border-b border-navy-800 bg-navy-950/30 flex flex-col gap-2">
+        <label class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Recruitment Pipeline Status</label>
+        <div class="grid grid-cols-5 gap-1.5" id="pipeline-status-strip">
+            <!-- Dynamically populated buttons -->
+        </div>
+    </div>
+    
+    <!-- Drawer Scrollable Content -->
+    <div class="flex-1 overflow-y-auto custom-scroll p-6 space-y-8 bg-navy-900/30">
+        <!-- Why this rank / Reasoning -->
+        <section class="bg-navy-800/40 border border-navy-800 p-5 rounded-2xl">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="material-symbols-outlined text-purple-400 text-[20px] purple-accent-glow">verified</span>
+                <h4 class="text-xs uppercase tracking-wider text-purple-300 font-extrabold font-display">AI System Reasoning</h4>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed font-medium" id="detail-reasoning">
+                Top-tier technical alignment with specialized experience in distributed systems and a perfect skill match for the core stack.
+            </p>
+        </section>
+        
+        <!-- Signal Breakdown Progress -->
+        <section class="space-y-4">
+            <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold font-display">Signal Alignment</h4>
+            <div class="space-y-3.5 bg-navy-800/20 p-5 rounded-2xl border border-navy-800/50">
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400 font-semibold">Title fit</span>
+                        <span id="bar-title-percent" class="text-purple-400 font-bold">100%</span>
+                    </div>
+                    <div class="h-2 bg-navy-950 rounded-full overflow-hidden">
+                        <div id="bar-title" class="h-full bg-gradient-to-r from-purple to-purple-400 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400 font-semibold">Skill fit</span>
+                        <span id="bar-skill-percent" class="text-purple-400 font-bold">95%</span>
+                    </div>
+                    <div class="h-2 bg-navy-950 rounded-full overflow-hidden">
+                        <div id="bar-skill" class="h-full bg-gradient-to-r from-purple to-purple-400 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400 font-semibold">Career Stability</span>
+                        <span id="bar-career-percent" class="text-purple-400 font-bold">90%</span>
+                    </div>
+                    <div class="h-2 bg-navy-950 rounded-full overflow-hidden">
+                        <div id="bar-career" class="h-full bg-gradient-to-r from-purple to-purple-400 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400 font-semibold">Experience Level</span>
+                        <span id="bar-exp-percent" class="text-purple-400 font-bold">88%</span>
+                    </div>
+                    <div class="h-2 bg-navy-950 rounded-full overflow-hidden">
+                        <div id="bar-exp" class="h-full bg-gradient-to-r from-purple to-purple-400 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Skills Grid -->
+        <section class="space-y-3">
+            <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold font-display">Skills Inventory</h4>
+            <div class="flex flex-wrap gap-2" id="detail-skills">
+                <!-- Dynamically populated skills badges -->
+            </div>
+        </section>
+        
+        <!-- Career Timeline -->
+        <section class="space-y-4">
+            <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold font-display">Career Timeline</h4>
+            <div class="relative pl-6 space-y-6 border-l-2 border-navy-700 ml-3" id="detail-timeline">
+                <!-- Timeline items populated dynamically -->
+            </div>
+        </section>
+        
+        <!-- Behavioral Signals Grid -->
+        <section class="space-y-3">
+            <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold font-display">Engagement & Behavioral Signals</h4>
+            <div class="grid grid-cols-2 gap-3" id="detail-behavioral">
+                <!-- Dynamically populated signals -->
+            </div>
+        </section>
+        
+        <!-- Risk Assessment Alert Box -->
+        <section id="detail-risk-box">
+            <!-- Pulsing Warning/Clean assessment -->
+        </section>
+        
+        <div class="h-20"></div>
+    </div>
+    
+    <!-- Drawer Footer Actions -->
+    <footer class="border-t border-navy-800 bg-navy-950 p-6 sticky bottom-0 z-10 flex gap-4">
+        <button class="focusable flex-1 h-12 bg-gradient-to-r from-purple to-indigo-600 hover:from-purple hover:to-indigo-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple/20 active:scale-95 flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">check_circle</span>
+            Shortlist Candidate
+        </button>
+        <button id="detail-reject" class="focusable w-12 h-12 border border-red-500/20 text-red-400 rounded-xl font-bold hover:bg-red-500/5 transition-all active:scale-95 flex items-center justify-center group" aria-label="Disqualify candidate">
+            <span class="material-symbols-outlined group-hover:scale-110 transition-transform">cancel</span>
+        </button>
+    </footer>
+</div>
+
+<script>
+    // Global State
+    let candidatePool = [];
+    let activeFilters = {
+        search: "",
+        minScore: 0, // start with 0 so all candidates are visible unless adjusted
+        minExp: null,
+        maxExp: null,
+        noticePeriod: "all",
+        indiaOnly: false,
+        otwOnly: false,
+        sortBy: "rank"
+    };
+    let activeCandidateId = null;
+    let activeRole = "ai_engineer";
+    let isReranking = false;
+
+    // Skill Tiers Constants
+    const CORE_SKILLS = [
+        "sentence-transformers", "sentence transformers", "embeddings", "embedding",
+        "bge", "e5", "openai embeddings",
+        "vector search", "vector database", "faiss", "qdrant", "pinecone",
+        "weaviate", "milvus", "opensearch", "elasticsearch",
+        "rag", "retrieval augmented generation", "retrieval-augmented",
+        "information retrieval", "bm25", "hybrid search", "dense retrieval",
+        "sparse retrieval", "semantic search", "cross-encoder", "bi-encoder",
+        "nlp", "natural language processing", "bert", "gpt", "transformers",
+        "hugging face", "huggingface",
+        "ndcg", "mrr", "map", "learning to rank", "lambdamart", "ltr",
+        "ranking", "reranking", "recommendation system", "recommender",
+        "a/b testing", "evaluation framework", "python"
+    ];
+
+    const PREFERRED_SKILLS = [
+        "lora", "qlora", "peft", "fine-tuning", "fine tuning",
+        "xgboost", "distributed systems", "large-scale inference",
+        "open source", "open-source"
+    ];
+
+    const ADJACENT_SKILLS = [
+        "computer vision", "image classification", "object detection", "yolo",
+        "gans", "diffusion models", "speech recognition", "tts", "asr", "robotics"
+    ];
+
+    const STAGES = ["Uncontacted", "Shortlisted", "Interview", "Offer", "Rejected"];
+
+    // Elements
+    const searchInput = document.getElementById("search-input");
+    const mobileSearch = document.getElementById("mobile-search");
+    const scoreSlider = document.getElementById("score-slider");
+    const scoreValLabel = document.getElementById("score-val-label");
+    const expMinInput = document.getElementById("exp-min");
+    const expMaxInput = document.getElementById("exp-max");
+    const noticeSelect = document.getElementById("notice-select");
+    const indiaToggle = document.getElementById("india-toggle");
+    const otwToggle = document.getElementById("otw-toggle");
+    const sortSelect = document.getElementById("sort-select");
+    const roleSelect = document.getElementById("role-select");
+    const roleLoadingIndicator = document.getElementById("role-loading-indicator");
+    const roleLabelDisplay = document.getElementById("role-label-display");
+    const activeRoleBadge = document.getElementById("active-role-badge");
+    
+    const candidateList = document.getElementById("candidate-list");
+    const candidateCountLabel = document.getElementById("candidate-count");
+    const exportBtn = document.getElementById("export-csv-btn");
+
+    function updateActiveRoleBadge() {
+        const selectedLabel = roleSelect.options[roleSelect.selectedIndex]?.text || "AI Engineer";
+        if (activeRoleBadge) {
+            activeRoleBadge.textContent = `Ranking for: ${selectedLabel}`;
+        }
+        if (roleLabelDisplay) {
+            roleLabelDisplay.textContent = selectedLabel;
+        }
+    }
+    
+    const drawer = document.getElementById("candidate-drawer");
+    const closeDrawerBtn = document.getElementById("close-drawer");
+
+    // Debounce helper
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    const debouncedApplyFilters = debounce(applyFilters, 150);
+
+    // Fetch and populate the role dropdown from /api/roles
+    async function fetchAndPopulateRoles() {
+        try {
+            const res = await fetch("/api/roles");
+            if (!res.ok) return; // graceful fallback — static options already in HTML
+            const roles = await res.json();
+            if (!Array.isArray(roles) || roles.length === 0) return;
+
+            // Rebuild options
+            roleSelect.innerHTML = "";
+            roles.forEach(r => {
+                const opt = document.createElement("option");
+                opt.value = r.value;
+                opt.textContent = r.label;
+                if (r.value === activeRole) opt.selected = true;
+                roleSelect.appendChild(opt);
+            });
+            updateActiveRoleBadge();
+        } catch (e) {
+            console.warn("Could not fetch roles list:", e);
+        }
+    }
+
+    // Re-rank candidates on the server for the given role, then reload
+    async function rerankAndLoad(role) {
+        if (isReranking) return;
+        isReranking = true;
+
+        // Bug 1 Fix: Update display label immediately so the active role badge updates instantly
+        updateActiveRoleBadge();
+
+        // Show spinner, disable dropdown
+        roleLoadingIndicator.classList.remove("hidden");
+        roleSelect.disabled = true;
+        renderSkeletons();
+
+        try {
+            const res = await fetch(`/api/rerank?role=${encodeURIComponent(role)}`);
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                const msg = err?.detail?.error || err?.detail || "Rerank failed";
+                throw new Error(msg);
+            }
+            const result = await res.json();
+            console.log(`Reranked ${result.ranked_count} candidates for role '${role}' in ${result.elapsed_seconds}s`);
+
+            // Now reload the freshly-ranked candidates
+            await loadCandidates();
+        } catch (error) {
+            console.error("Rerank failed:", error);
+            candidateList.innerHTML = `
+                <div class="flex flex-col gap-4 justify-center items-center py-20 text-amber-400 border border-amber-500/10 rounded-2xl bg-amber-500/5 w-full">
+                    <span class="material-symbols-outlined text-5xl text-amber-500">sync_problem</span>
+                    <p class="text-base font-bold">Role rerank failed</p>
+                    <p class="text-xs text-slate-400 -mt-2">${error.message}</p>
+                    <button id="retry-rerank-btn" class="mt-4 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-purple/20 active:scale-95 flex items-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined text-[16px]">refresh</span>
+                        Retry
+                    </button>
+                </div>
+            `;
+            document.getElementById("retry-rerank-btn").addEventListener("click", () => rerankAndLoad(role));
+        } finally {
+            isReranking = false;
+            roleLoadingIndicator.classList.add("hidden");
+            roleSelect.disabled = false;
+        }
+    }
+
+    // Fetch Candidates Data from Endpoint with retry support for transient server restarts (e.g. due to uvicorn reload)
+    async function loadCandidates(retries = 5, delay = 1500) {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                renderSkeletons();
+                const response = await fetch("/api/candidates");
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                candidatePool = await response.json();
+                console.log("Loaded candidates pool:", candidatePool);
+                
+                // Apply sorting initially
+                if (activeFilters.sortBy === "rank") {
+                    candidatePool.sort((a, b) => a.rank - b.rank);
+                }
+                
+                // Set slider to lowest match score by default to show everything
+                if (candidatePool.length > 0) {
+                    const scores = candidatePool.map(c => Math.round(c.score * 100));
+                    const minVal = Math.min(...scores);
+                    activeFilters.minScore = minVal;
+                    scoreSlider.min = minVal;
+                    scoreSlider.value = minVal;
+                    scoreValLabel.textContent = `${minVal}%+`;
+                }
+
+                renderCandidateList(candidatePool);
+                applyFilters();
+                return; // Success, exit function
+            } catch (error) {
+                console.warn(`Attempt ${attempt} to load candidates failed:`, error);
+                if (attempt === retries) {
+                    // All attempts failed, render error screen
+                    console.error("Failed to load candidates after all retries:", error);
+                    candidateList.innerHTML = `
+                        <div class="flex flex-col gap-4 justify-center items-center py-20 text-red-400 border border-red-500/10 rounded-2xl bg-red-500/5 w-full">
+                            <span class="material-symbols-outlined text-5xl text-red-500">error</span>
+                            <p class="text-base font-bold">Failed to load candidate ranker data</p>
+                            <p class="text-xs text-slate-400 -mt-2">Ensure FastAPI server is running and outputs/ranked_candidates.json is available.</p>
+                            <button id="retry-load-btn" class="mt-4 bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-red-600/20 active:scale-95 flex items-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined text-[16px]">refresh</span>
+                                Retry Connection
+                            </button>
+                        </div>
+                    `;
+                    document.getElementById("retry-load-btn").addEventListener("click", () => loadCandidates());
+                    break;
+                }
+                // Wait before retrying
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+    }
+
+    // Render Skeletons on Loading
+    function renderSkeletons() {
+        candidateList.innerHTML = "";
+        for (let i = 0; i < 5; i++) {
+            const skeleton = document.createElement("div");
+            skeleton.className = "skeleton-card bg-[#131929]/50 border border-navy-800/50 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row gap-5 relative overflow-hidden animate-pulse";
+            skeleton.innerHTML = `
+                <div class="absolute top-0 left-0 w-[3px] h-full bg-slate-800"></div>
+                <div class="flex items-center gap-4 shrink-0">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-11 h-11 bg-slate-800 rounded-xl"></div>
+                        <div class="w-12 h-12 bg-slate-800 rounded-xl"></div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center px-2">
+                        <div class="w-16 h-8 bg-slate-800 rounded-lg"></div>
+                        <div class="w-8 h-2 bg-slate-800 rounded mt-2"></div>
+                    </div>
+                </div>
+                <div class="flex-1 flex flex-col gap-3 min-w-0">
+                    <div>
+                        <div class="w-48 h-4 bg-slate-800 rounded"></div>
+                        <div class="w-32 h-3 bg-slate-800 rounded mt-2"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                        <div class="w-24 h-6 bg-slate-800 rounded-lg"></div>
+                        <div class="w-20 h-6 bg-slate-800 rounded-lg"></div>
+                        <div class="w-20 h-6 bg-slate-800 rounded-lg"></div>
+                    </div>
+                    <div class="w-full h-8 bg-slate-800/60 rounded-xl mt-1"></div>
+                </div>
+            `;
+            candidateList.appendChild(skeleton);
+        }
+    }
+
+    // Immediate count calculator (without updating opacities/DOM cards)
+    function calculateAndDisplayCount() {
+        let matchCount = 0;
+        candidatePool.forEach(c => {
+            let isMatch = true;
+            
+            // Search Query
+            const query = activeFilters.search.trim().toLowerCase();
+            if (query) {
+                const nameMatch = c.name.toLowerCase().includes(query);
+                const roleMatch = c.role.toLowerCase().includes(query);
+                const skillMatch = c.skills.some(s => s.toLowerCase().includes(query));
+                if (!nameMatch && !roleMatch && !skillMatch) isMatch = false;
+            }
+            
+            // Score
+            if ((c.score * 100) < activeFilters.minScore) isMatch = false;
+            
+            // Experience
+            if (activeFilters.minExp !== null && c.experience < activeFilters.minExp) isMatch = false;
+            if (activeFilters.maxExp !== null && c.experience > activeFilters.maxExp) isMatch = false;
+            
+            // Notice
+            if (activeFilters.noticePeriod !== "all") {
+                const maxDays = parseInt(activeFilters.noticePeriod);
+                if (c.notice_period_days > maxDays) isMatch = false;
+            }
+            
+            // India
+            if (activeFilters.indiaOnly && c.country.toLowerCase() !== "india") isMatch = false;
+            
+            // OTW
+            if (activeFilters.otwOnly && !c.redrob_signals.open_to_work_flag) isMatch = false;
+            
+            if (isMatch) matchCount++;
+        });
+        candidateCountLabel.textContent = matchCount;
+    }
+
+    // Apply Filter Logic (toggles opacity state smoothly)
+    function applyFilters() {
+        let matchCount = 0;
+
+        candidatePool.forEach(c => {
+            let isMatch = true;
+
+            // Search Match
+            const query = activeFilters.search.trim().toLowerCase();
+            if (query) {
+                const nameMatch = c.name.toLowerCase().includes(query);
+                const roleMatch = c.role.toLowerCase().includes(query);
+                const skillMatch = c.skills.some(s => s.toLowerCase().includes(query));
+                if (!nameMatch && !roleMatch && !skillMatch) {
+                    isMatch = false;
+                }
+            }
+
+            // Score Match
+            if ((c.score * 100) < activeFilters.minScore) {
+                isMatch = false;
+            }
+
+            // Experience Match
+            if (activeFilters.minExp !== null && c.experience < activeFilters.minExp) {
+                isMatch = false;
+            }
+            if (activeFilters.maxExp !== null && c.experience > activeFilters.maxExp) {
+                isMatch = false;
+            }
+
+            // Notice Period Match
+            if (activeFilters.noticePeriod !== "all") {
+                const maxDays = parseInt(activeFilters.noticePeriod);
+                if (c.notice_period_days > maxDays) {
+                    isMatch = false;
+                }
+            }
+
+            // Country (India Only) Match
+            if (activeFilters.indiaOnly && c.country.toLowerCase() !== "india") {
+                isMatch = false;
+            }
+
+            // Open to Work Toggle
+            if (activeFilters.otwOnly && !c.redrob_signals.open_to_work_flag) {
+                isMatch = false;
+            }
+
+            c.isMatch = isMatch;
+            if (isMatch) matchCount++;
+        });
+
+        // Update main workspace header
+        candidateCountLabel.textContent = matchCount;
+
+        // Apply transition class/opacities to DOM elements
+        const cardElements = document.querySelectorAll(".candidate-card");
+        cardElements.forEach(card => {
+            const candId = card.getAttribute("data-candidate-id");
+            const cand = candidatePool.find(c => c.candidate_id === candId);
+            if (cand) {
+                if (cand.isMatch) {
+                    card.classList.remove("opacity-30", "pointer-events-none");
+                } else {
+                    card.classList.add("opacity-30", "pointer-events-none");
+                }
+            }
+        });
+
+        // If 0 results match, show Empty State message
+        const emptyState = document.getElementById("empty-state");
+        if (matchCount === 0) {
+            emptyState.classList.remove("hidden");
+        } else {
+            emptyState.classList.add("hidden");
+        }
+    }
+
+    // Render dynamic pills for candidate cards
+    function renderSignalPills(c) {
+        // 1. Core Skills
+        const coreCount = c.features.core_skill_count;
+        let coreColor = "bg-red-500/10 border-red-500/20 text-red-400";
+        if (coreCount >= 5) coreColor = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+        else if (coreCount >= 3) coreColor = "bg-amber-500/10 border-amber-500/20 text-amber-400";
+        
+        // 2. Experience (neutral)
+        const expColor = "bg-navy-800/80 border border-navy-700/30 text-slate-300";
+        
+        // 3. Notice
+        const noticeDays = c.notice_period_days;
+        let noticeColor = "bg-red-500/10 border-red-500/20 text-red-400";
+        if (noticeDays <= 30) noticeColor = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+        else if (noticeDays <= 60) noticeColor = "bg-amber-500/10 border-amber-500/20 text-amber-400";
+        
+        // 4. Location (neutral)
+        const locColor = "bg-navy-800/80 border border-navy-700/30 text-slate-300";
+        
+        // 5. Last active
+        const activeDays = c.features.days_since_active;
+        let activeColor = "bg-red-500/10 border-red-500/20 text-red-400";
+        if (activeDays <= 30) activeColor = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+        else if (activeDays <= 90) activeColor = "bg-amber-500/10 border-amber-500/20 text-amber-400";
+        
+        return `
+            <span class="px-2 py-0.5 border rounded-lg text-[10px] font-bold flex items-center gap-1 shrink-0 ${coreColor}">
+                <span>⭐</span> Skills: ${coreCount} core
+            </span>
+            <span class="px-2 py-0.5 border rounded-lg text-[10px] font-bold flex items-center gap-1 shrink-0 ${expColor}">
+                <span>📅</span> ${c.experience} yrs exp
+            </span>
+            <span class="px-2 py-0.5 border rounded-lg text-[10px] font-bold flex items-center gap-1 shrink-0 ${noticeColor}">
+                <span>⏰</span> Notice: ${noticeDays}d
+            </span>
+            <span class="px-2 py-0.5 border rounded-lg text-[10px] font-bold flex items-center gap-1 shrink-0 ${locColor}">
+                <span>📍</span> ${c.location}
+            </span>
+            <span class="px-2 py-0.5 border rounded-lg text-[10px] font-bold flex items-center gap-1 shrink-0 ${activeColor}">
+                <span>🕐</span> Active: ${activeDays}d ago
+            </span>
+        `;
+    }
+
+    // Render Cards in DOM
+    function renderCandidateList(candidates) {
+        candidateList.innerHTML = "";
+        
+        if (candidates.length === 0) {
+            return;
+        }
+
+        candidates.forEach(c => {
+            let borderClass = "card-border-rest";
+            if (c.rank <= 10) {
+                borderClass = "card-border-top-10";
+            } else if (c.rank <= 50) {
+                borderClass = "card-border-top-50";
+            }
+            
+            const riskColor = c.risk === 'Clean' ? 'border-green-500/20 bg-green-500/10 text-green-400' : 'border-amber-500/20 bg-amber-500/10 text-amber-400';
+            const riskIcon = c.risk === 'Clean' ? '✓' : '⚠️';
+            
+            // Format score to percentage
+            const scorePct = Math.round(c.score * 100);
+
+            // Determine score text color
+            let scoreColorClass = "text-red-400";
+            if (scorePct >= 90) {
+                scoreColorClass = "text-emerald-400";
+            } else if (scorePct >= 75) {
+                scoreColorClass = "text-amber-400";
+            }
+
+            // Score bar gradient
+            let barColorClass = "from-red-500 to-red-400 shadow-red-500/20";
+            if (scorePct >= 90) {
+                barColorClass = "from-emerald-500 to-emerald-400 shadow-emerald-500/20";
+            } else if (scorePct >= 75) {
+                barColorClass = "from-amber-500 to-amber-400 shadow-amber-500/20";
+            }
+
+            // Rank Badge CSS Class
+            let rankClass = "rank-badge-rest";
+            if (c.rank === 1) rankClass = "rank-badge-1 font-black";
+            else if (c.rank === 2) rankClass = "rank-badge-2 font-black";
+            else if (c.rank === 3) rankClass = "rank-badge-3 font-black";
+            else if (c.rank <= 10) rankClass = "rank-badge-top-10 font-black";
+
+            // Saved status badge
+            const savedStatus = localStorage.getItem(`cand_status_${c.candidate_id}`) || "Uncontacted";
+
+            const card = document.createElement('div');
+            card.className = `candidate-card rounded-2xl p-5 md:p-6 flex flex-col md:flex-row gap-5 relative overflow-hidden group focusable cursor-pointer ${borderClass}`;
+            card.tabIndex = 0;
+            card.setAttribute("role", "button");
+            card.setAttribute("data-candidate-id", c.candidate_id);
+            card.setAttribute("aria-label", `Candidate #${c.rank}: ${c.name}, Match Score: ${scorePct}%`);
+            
+            card.innerHTML = `
+                <!-- Top-Right Corner Badges -->
+                <div class="absolute top-4 right-4 flex items-center gap-2">
+                    <span id="card-status-${c.candidate_id}" class="px-2 py-0.5 rounded-md bg-purple-600/10 border border-purple-500/20 text-purple-400 text-[9px] font-black uppercase tracking-wider select-none">${savedStatus}</span>
+                    <span class="px-2 py-0.5 border rounded-lg text-[9px] font-black uppercase tracking-wider ${riskColor} flex items-center gap-1 select-none">
+                        <span>${riskIcon}</span> ${c.risk}
+                    </span>
+                </div>
+
+                <!-- Left Column: Rank, Avatar, Score Percentage -->
+                <div class="flex items-center gap-4 shrink-0">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-11 h-11 ${rankClass} rounded-xl flex items-center justify-center text-sm shadow-sm transition-all duration-300">
+                            #${c.rank}
+                        </div>
+                        <div class="w-12 h-12 rounded-xl border border-navy-700 overflow-hidden bg-navy-950 p-0.5">
+                            <img class="w-full h-full object-cover rounded-lg" src="${c.image}" alt="${c.name}">
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-center px-2">
+                        <span class="text-[2rem] font-[800] leading-none ${scoreColorClass} tracking-tight select-none font-display">
+                            ${scorePct}%
+                        </span>
+                        <div class="w-16 h-1 bg-navy-950 rounded-full overflow-hidden border border-navy-800/50 mt-1.5">
+                            <div class="score-bar-fill bg-gradient-to-r ${barColorClass} h-full rounded-full" data-width="${scorePct}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Middle Column: Name, Role, Pills, Reasoning -->
+                <div class="flex-1 flex flex-col gap-2 min-w-0 pr-8 md:pr-0">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-[1.1rem] font-semibold text-white tracking-tight leading-none group-hover:text-purple-300 transition-colors">${c.name}</h3>
+                            ${c.redrob_signals.open_to_work_flag ? '<span class="px-2 py-0.5 rounded-md bg-green-500/10 border border-green-500/20 text-green-400 text-[9px] font-black uppercase tracking-wider select-none">Open to work</span>' : ''}
+                        </div>
+                        <p class="text-[0.85rem] font-medium text-[#94A3B8] mt-1">${c.role} <span class="text-slate-500 font-normal">at ${c.company}</span></p>
+                    </div>
+                    
+                    <!-- Signal Pills Container -->
+                    <div class="flex flex-wrap gap-1.5 mt-1">
+                        ${renderSignalPills(c)}
+                    </div>
+                    
+                    <!-- Reasoning Text (ellipsized, expands on hover) -->
+                    <div class="candidate-reasoning-container mt-1">
+                        <p class="candidate-reasoning text-xs italic text-[#64748B] leading-relaxed cursor-help" title="Hover to expand reasoning">
+                            "${c.reasoning}"
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Column: View Profile button with sliding arrow -->
+                <div class="flex items-center justify-end shrink-0 ml-auto self-center mt-4 md:mt-0">
+                    <button class="view-profile-btn flex items-center gap-1.5 px-4 py-2 bg-navy-800/80 border border-navy-700 text-xs font-bold text-slate-300 rounded-xl select-none pointer-events-none">
+                        View Profile
+                        <span class="view-profile-arrow">→</span>
+                    </button>
+                </div>
+            `;
+            
+            // Set up click/keyboard handlers
+            const openAction = () => {
+                activeCandidateId = c.candidate_id;
+                openDrawer(c);
+            };
+            
+            card.addEventListener("click", openAction);
+            card.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openAction();
+                }
+            });
+            
+            candidateList.appendChild(card);
+        });
+
+        // Trigger score bars staggered animations via CSS variable target-width and delay
+        document.querySelectorAll('.score-bar-fill').forEach((bar, idx) => {
+            const pct = bar.getAttribute('data-width');
+            bar.style.setProperty('--target-width', pct);
+            bar.style.animationDelay = `${idx * 80}ms`;
+            bar.classList.add('score-bar-fill-animated');
+        });
+    }
+
+    // Render the recruitment status buttons in drawer
+    function renderPipelineStrip(candidateId) {
+        const container = document.getElementById("pipeline-status-strip");
+        container.innerHTML = "";
+        
+        const currentStatus = localStorage.getItem(`cand_status_${candidateId}`) || "Uncontacted";
+        
+        STAGES.forEach(stage => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "text-[10px] font-bold py-1.5 rounded-lg text-center transition-all cursor-pointer border focus:outline-none";
+            
+            if (stage === currentStatus) {
+                btn.className += " bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/20";
+            } else {
+                btn.className += " bg-transparent border-navy-700 text-slate-400 hover:text-white hover:border-navy-600";
+            }
+            
+            btn.textContent = stage;
+            btn.addEventListener("click", () => {
+                localStorage.setItem(`cand_status_${candidateId}`, stage);
+                renderPipelineStrip(candidateId);
+                // Update corresponding card live!
+                const cardStatusBadge = document.getElementById(`card-status-${candidateId}`);
+                if (cardStatusBadge) {
+                    cardStatusBadge.textContent = stage;
+                }
+            });
+            container.appendChild(btn);
+        });
+    }
+
+    // Open Slider Drawer
+    function openDrawer(candidate) {
+        // Accessibility: set active element backup
+        window.drawerTriggerElement = document.activeElement;
+        
+        // Populating drawer fields
+        document.getElementById('detail-name').innerText = candidate.name;
+        document.getElementById('detail-title').innerText = candidate.role;
+        document.getElementById('detail-company').innerText = `at ${candidate.company}`;
+        document.getElementById('detail-location').innerText = `${candidate.location}, ${candidate.country}`;
+        
+        const scorePct = Math.round(candidate.score * 100);
+        const scoreValSpan = document.getElementById('detail-score');
+        scoreValSpan.innerText = `${scorePct}%`;
+        scoreValSpan.className = "absolute font-display text-xl font-black tracking-tight";
+        
+        // Set dynamic text color and progress stroke color based on score value
+        let ringColor = "";
+        let textColor = "";
+        if (candidate.score >= 0.90) {
+            ringColor = "url(#gradient-green)";
+            textColor = "text-emerald-400";
+        } else if (candidate.score >= 0.75) {
+            ringColor = "url(#gradient-amber)";
+            textColor = "text-amber-400";
+        } else {
+            ringColor = "url(#gradient-red)";
+            textColor = "text-red-400";
+        }
+        scoreValSpan.classList.add(textColor);
+        
+        document.getElementById('detail-avatar').src = candidate.image;
+        document.getElementById('detail-reasoning').innerText = candidate.reasoning;
+        
+        // Relocation Badge setup
+        const willingBadge = document.getElementById("detail-willing-badge");
+        const willingDot = document.getElementById("detail-willing-dot");
+        if (candidate.redrob_signals.willing_to_relocate) {
+            willingBadge.className = "absolute -bottom-1 -right-1 w-5 h-5 bg-green-500/20 border-2 border-green-500 rounded-full flex items-center justify-center shadow-lg";
+            willingDot.className = "w-2 h-2 rounded-full bg-green-400";
+            willingBadge.setAttribute("aria-label", "Willing to relocate");
+        } else {
+            willingBadge.className = "absolute -bottom-1 -right-1 w-5 h-5 bg-slate-500/20 border-2 border-slate-500 rounded-full flex items-center justify-center shadow-lg";
+            willingDot.className = "w-2 h-2 rounded-full bg-slate-400";
+            willingBadge.setAttribute("aria-label", "Not willing to relocate");
+        }
+        
+        // Rank Indicator Badge
+        const rankBadge = document.getElementById("detail-rank-badge");
+        if (candidate.rank <= 10) {
+            rankBadge.className = "px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider select-none bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-lg shadow-orange-500/10";
+            rankBadge.innerText = `#${candidate.rank} Top Match`;
+        } else {
+            rankBadge.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider select-none bg-navy-800 text-slate-300 border border-navy-700";
+            rankBadge.innerText = `#${candidate.rank} Match`;
+        }
+
+        // 1. Trigger radial SVG stroke animation
+        const progressRing = document.getElementById('progress-ring');
+        progressRing.setAttribute('stroke', ringColor);
+        const circumference = 213.63;
+        progressRing.style.strokeDashoffset = circumference;
+        
+        // Force reflow
+        progressRing.getBoundingClientRect();
+        
+        const offset = circumference - (candidate.score * circumference);
+        setTimeout(() => {
+            progressRing.style.strokeDashoffset = offset;
+        }, 50);
+
+        // 2. Set signal progress bars (Title tier, Skills, Career stability, Experience)
+        const feats = candidate.features;
+        
+        // Title fit percent calculation
+        let titlePct = 0;
+        if (feats.title_tier === "primary") titlePct = 100;
+        else if (feats.title_tier === "adjacent") titlePct = 55;
+        
+        // Skill fit percent calculation (capped at 100%)
+        const skillPct = Math.round(Math.min((feats.core_skill_count / 6) * 100, 100));
+        
+        // Career stability percent
+        let careerPct = 60;
+        if (feats.career_at_product_company && !feats.consulting_only_career) careerPct = 100;
+        else if (feats.consulting_only_career) careerPct = 0;
+        
+        // Experience fit percent
+        const expPct = Math.round(Math.min((candidate.experience / 8) * 100, 100));
+
+        // Animate detail bars in drawer
+        const setDrawerBar = (barId, pctId, pct, delay) => {
+            const bar = document.getElementById(barId);
+            const pctText = document.getElementById(pctId);
+            pctText.innerText = `${pct}%`;
+            
+            let colorClass = "text-red-400";
+            let bgGradient = "from-red-500 to-red-400 shadow-red-500/20";
+            if (pct >= 90) {
+                colorClass = "text-emerald-400";
+                bgGradient = "from-emerald-500 to-emerald-400 shadow-emerald-500/20";
+            } else if (pct >= 75) {
+                colorClass = "text-amber-400";
+                bgGradient = "from-amber-500 to-amber-400 shadow-amber-500/20";
+            }
+            
+            pctText.className = `${colorClass} font-bold`;
+            bar.className = `h-full bg-gradient-to-r ${bgGradient} rounded-full transition-all duration-500 ease-out shadow-sm`;
+            
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = `${pct}%`;
+            }, delay);
+        };
+        
+        setDrawerBar('bar-title', 'bar-title-percent', titlePct, 50);
+        setDrawerBar('bar-skill', 'bar-skill-percent', skillPct, 100);
+        setDrawerBar('bar-career', 'bar-career-percent', careerPct, 150);
+        setDrawerBar('bar-exp', 'bar-exp-percent', expPct, 200);
+
+        // 3. Populate Skills Matrix
+        const skillsList = document.getElementById('detail-skills');
+        skillsList.innerHTML = "";
+        
+        candidate.raw_skills.forEach(s => {
+            const skillItem = document.createElement("div");
+            
+            // Skill tier colorization
+            let tier = "normal";
+            const skillLower = s.name.trim().toLowerCase();
+            if (CORE_SKILLS.some(c => skillLower.includes(c))) {
+                tier = "core";
+            } else if (PREFERRED_SKILLS.some(p => skillLower.includes(p))) {
+                tier = "preferred";
+            } else if (ADJACENT_SKILLS.some(a => skillLower.includes(a))) {
+                tier = "adjacent";
+            }
+            
+            let pillStyles = "";
+            let iconHTML = "";
+            let secondSpanStyles = "";
+            
+            if (tier === "core") {
+                pillStyles = "bg-purple-600 border-purple-500 text-white";
+                secondSpanStyles = "bg-purple-700 text-purple-100";
+            } else if (tier === "preferred") {
+                pillStyles = "bg-transparent border-sky-500/40 text-sky-400";
+                secondSpanStyles = "bg-sky-950/80 text-sky-300";
+            } else if (tier === "adjacent") {
+                pillStyles = "bg-slate-800 border-slate-700 text-slate-300";
+                secondSpanStyles = "bg-slate-900 text-amber-300";
+                iconHTML = `<span class="mr-1">⚠️</span>`;
+            } else {
+                pillStyles = "bg-navy-800 border-navy-700 text-slate-400";
+                secondSpanStyles = "bg-navy-950 text-slate-400";
+            }
+            
+            skillItem.className = `skill-pill-card group relative inline-flex items-center rounded-xl cursor-pointer select-none border ${pillStyles}`;
+            skillItem.innerHTML = `
+                <div class="skill-pill-inner w-full">
+                    <span class="h-8 flex items-center px-3.5 whitespace-nowrap text-xs font-semibold">
+                        ${iconHTML}<span>${s.name}</span>
+                    </span>
+                    <span class="h-8 flex items-center justify-center px-3.5 whitespace-nowrap text-xs font-bold ${secondSpanStyles}">
+                        Used: ${s.duration_months} months
+                    </span>
+                </div>
+            `;
+            skillsList.appendChild(skillItem);
+        });
+
+        // 4. Populate Timeline
+        const timeline = document.getElementById("detail-timeline");
+        timeline.innerHTML = "";
+        if (candidate.career_history.length === 0) {
+            timeline.innerHTML = '<p class="text-xs text-slate-500">No career history provided.</p>';
+        } else {
+            candidate.career_history.forEach(job => {
+                const item = document.createElement("div");
+                item.className = "relative pl-6 space-y-1.5";
+                
+                const dotColor = job.is_current ? "bg-purple shadow-lg shadow-purple/50" : "bg-navy-700";
+                const dateText = `${job.start_date || "Unknown"} – ${job.is_current ? 'Present' : (job.end_date || 'N/A')}`;
+                
+                item.innerHTML = `
+                    <div class="absolute left-[-25px] top-1.5 w-3 h-3 rounded-full ${dotColor} border border-navy-900"></div>
+                    <div class="flex flex-wrap justify-between items-baseline gap-1 leading-none">
+                        <p class="font-display font-extrabold text-sm text-white">${job.company}</p>
+                        <span class="text-[10px] text-slate-500 font-bold">${dateText}</span>
+                    </div>
+                    <p class="text-xs font-semibold text-purple-300">${job.title} • <span class="text-slate-400 font-medium">${job.duration_months} mos</span></p>
+                    <p class="text-xs text-slate-400 leading-relaxed italic mt-1 font-medium">"${job.description || ''}"</p>
+                `;
+                timeline.appendChild(item);
+            });
+        }
+
+        // 5. Populate Engagement and Behavioral Grid
+        const behavioral = document.getElementById("detail-behavioral");
+        behavioral.innerHTML = "";
+        
+        const addSignal = (label, val, icon) => {
+            const card = document.createElement("div");
+            card.className = "bg-navy-800/30 p-4 rounded-xl border border-navy-800 flex items-center gap-3";
+            card.innerHTML = `
+                <span class="material-symbols-outlined text-purple-400 text-lg shrink-0">${icon}</span>
+                <div class="min-w-0">
+                    <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold leading-none mb-1">${label}</p>
+                    <p class="font-display text-sm font-black text-white leading-none">${val}</p>
+                </div>
+            `;
+            behavioral.appendChild(card);
+        };
+        
+        const signals = candidate.redrob_signals;
+        addSignal("Response Rate", `${Math.round(signals.recruiter_response_rate * 100)}%`, "mail");
+        addSignal("Last Active", `${candidate.features.days_since_active} days ago`, "schedule");
+        addSignal("Interview Rate", `${Math.round(signals.interview_completion_rate * 100)}%`, "handshake");
+        addSignal("GitHub Activity", `${Math.round(signals.github_activity_score)}/100`, "terminal");
+
+        // 6. Populate Risk Alert box with pulse warning moment
+        const riskBox = document.getElementById("detail-risk-box");
+        const isClean = candidate.risk === "Clean";
+        
+        if (isClean) {
+            riskBox.innerHTML = `
+                <div class="bg-green-500/5 text-green-300 p-4 border border-green-500/10 rounded-2xl flex items-start gap-3">
+                    <span class="material-symbols-outlined text-[24px] text-green-400 shrink-0">check_circle</span>
+                    <div>
+                        <p class="text-xs uppercase tracking-wider font-extrabold font-display leading-none mb-1">Profile Intelligence Audit: Clean</p>
+                        <p class="text-xs opacity-90 leading-relaxed font-medium">No fraudulent honeypots, ghost behaviors, or consulting-only anomalies detected. High alignment.</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            riskBox.innerHTML = `
+                <div class="bg-amber-500/5 text-amber-300 p-4 border border-amber-500/20 rounded-2xl flex items-start gap-3 pulse-warning-element">
+                    <span class="material-symbols-outlined text-[24px] text-amber-400 shrink-0">warning</span>
+                    <div>
+                        <p class="text-xs uppercase tracking-wider font-extrabold font-display leading-none mb-1">Intelligence Signal Alert: ${candidate.risk}</p>
+                        <p class="text-xs opacity-90 leading-relaxed font-medium">${candidate.riskDetail}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render pipeline status strip
+        renderPipelineStrip(candidate.candidate_id);
+
+        // Show Overlay
+        const overlay = document.getElementById('drawer-overlay');
+        overlay.classList.remove('hidden');
+        overlay.getBoundingClientRect();
+        overlay.classList.add('active');
+
+        // Show Drawer Panel
+        drawer.classList.remove('translate-x-full');
+        drawer.focus();
+        
+        // Trap Focus for accessibility
+        setupFocusTrap();
+    }
+
+    // Close Slider Drawer
+    function closeDrawer() {
+        if (activeCandidateId === null) return;
+        
+        // Hide Drawer Panel
+        drawer.classList.add('translate-x-full');
+        document.getElementById('progress-ring').style.strokeDashoffset = 213.63;
+        
+        // Hide Overlay
+        const overlay = document.getElementById('drawer-overlay');
+        overlay.classList.remove('active');
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 200);
+
+        activeCandidateId = null;
+        
+        // Restore focus
+        if (window.drawerTriggerElement) {
+            window.drawerTriggerElement.focus();
+        }
+    }
+
+    // Trap Focus Inside Drawer
+    function setupFocusTrap() {
+        const focusableElements = drawer.querySelectorAll('button, [tabindex="0"], select, input');
+        if (focusableElements.length === 0) return;
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        // Focus the first element initially
+        firstElement.focus();
+
+        drawer.onkeydown = function(e) {
+            if (e.key === "Tab") {
+                if (e.shiftKey) { // Shift + Tab
+                    if (document.activeElement === firstElement) {
+                        lastElement.focus();
+                        e.preventDefault();
+                    }
+                } else { // Tab
+                    if (document.activeElement === lastElement) {
+                        firstElement.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
+        };
+    }
+
+    // Clear all sidebar filters with transitions
+    function clearAllFilters() {
+        activeFilters.search = "";
+        
+        // Set slider to lowest match score by default to show everything
+        if (candidatePool.length > 0) {
+            const scores = candidatePool.map(c => Math.round(c.score * 100));
+            const minVal = Math.min(...scores);
+            activeFilters.minScore = minVal;
+            scoreSlider.min = minVal;
+            scoreSlider.value = minVal;
+            scoreValLabel.textContent = `${minVal}%+`;
+        } else {
+            activeFilters.minScore = 0;
+            scoreSlider.value = 0;
+            scoreValLabel.textContent = "0%+";
+        }
+        
+        activeFilters.minExp = null;
+        activeFilters.maxExp = null;
+        activeFilters.noticePeriod = "all";
+        activeFilters.indiaOnly = false;
+        activeFilters.otwOnly = false;
+        activeFilters.sortBy = "rank";
+        
+        // Reset sidebar UI elements
+        searchInput.value = "";
+        mobileSearch.value = "";
+        
+        expMinInput.value = "";
+        expMaxInput.value = "";
+        
+        noticeSelect.value = "all";
+        sortSelect.value = "rank";
+        
+        // Reset India toggle
+        const indiaDot = document.getElementById("india-dot");
+        indiaToggle.className = "w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700 focus:outline-none focus:ring-1 focus:ring-purple-500";
+        indiaDot.className = "absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all";
+        
+        // Reset OTW toggle
+        const otwDot = document.getElementById("otw-dot");
+        otwToggle.className = "w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700 focus:outline-none focus:ring-1 focus:ring-purple-500";
+        otwDot.className = "absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all";
+        
+        // Apply sorting and render elements again
+        candidatePool.sort((a, b) => a.rank - b.rank);
+        renderCandidateList(candidatePool);
+        applyFilters();
+        
+        // Sync mobile modal overlay if open
+        const mobileFiltersContainer = document.getElementById("mobile-filters-container");
+        if (mobileFiltersContainer.innerHTML !== "") {
+            const mSlider = mobileFiltersContainer.querySelector("#score-slider");
+            const mLabel = mobileFiltersContainer.querySelector("#score-val-label");
+            const mExpMin = mobileFiltersContainer.querySelector("#exp-min");
+            const mExpMax = mobileFiltersContainer.querySelector("#exp-max");
+            const mNotice = mobileFiltersContainer.querySelector("#notice-select");
+            const mIndia = mobileFiltersContainer.querySelector("#india-toggle");
+            const mOtw = mobileFiltersContainer.querySelector("#otw-toggle");
+            const mSort = mobileFiltersContainer.querySelector("#sort-select");
+            
+            if (mSlider) {
+                mSlider.value = activeFilters.minScore;
+                mLabel.textContent = `${activeFilters.minScore}%+`;
+            }
+            if (mExpMin) mExpMin.value = "";
+            if (mExpMax) mExpMax.value = "";
+            if (mNotice) mNotice.value = "all";
+            if (mSort) mSort.value = "rank";
+            
+            if (mIndia) {
+                const mIndiaDot = mIndia.querySelector("span");
+                mIndia.className = "w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700 focus:outline-none";
+                mIndiaDot.className = "absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all";
+            }
+            if (mOtw) {
+                const mOtwDot = mOtw.querySelector("span");
+                mOtw.className = "w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700 focus:outline-none";
+                mOtwDot.className = "absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all";
+            }
+        }
+    }
+
+    // Wire Event Listeners
+    function wireEvents() {
+        // Role Selector
+        roleSelect.addEventListener("change", (e) => {
+            activeRole = e.target.value;
+            rerankAndLoad(activeRole);
+        });
+
+        // Search Input
+        const handleSearch = (e) => {
+            activeFilters.search = e.target.value;
+            applyFilters();
+        };
+        searchInput.addEventListener("input", handleSearch);
+        mobileSearch.addEventListener("input", handleSearch);
+        
+        // Score Slider (live count update on drag, debounced card opacity fade)
+        scoreSlider.addEventListener("input", (e) => {
+            const val = e.target.value;
+            activeFilters.minScore = parseInt(val);
+            scoreValLabel.textContent = `${val}%+`;
+            calculateAndDisplayCount();
+            debouncedApplyFilters();
+        });
+        
+        // Experience Fields
+        expMinInput.addEventListener("input", (e) => {
+            activeFilters.minExp = e.target.value === "" ? null : parseFloat(e.target.value);
+            applyFilters();
+        });
+        expMaxInput.addEventListener("input", (e) => {
+            activeFilters.maxExp = e.target.value === "" ? null : parseFloat(e.target.value);
+            applyFilters();
+        });
+        
+        // Notice Period Dropdown
+        noticeSelect.addEventListener("change", (e) => {
+            activeFilters.noticePeriod = e.target.value;
+            applyFilters();
+        });
+        
+        // India Only Toggle
+        indiaToggle.addEventListener("click", () => {
+            activeFilters.indiaOnly = !activeFilters.indiaOnly;
+            
+            const dot = document.getElementById("india-dot");
+            if (activeFilters.indiaOnly) {
+                indiaToggle.className = "w-9 h-5 bg-purple rounded-full relative transition-all border border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500";
+                dot.className = "absolute left-4 top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-all";
+            } else {
+                indiaToggle.className = "w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700 focus:outline-none focus:ring-1 focus:ring-purple-500";
+                dot.className = "absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all";
+            }
+            applyFilters();
+        });
+        
+        // Open to Work Toggle
+        otwToggle.addEventListener("click", () => {
+            activeFilters.otwOnly = !activeFilters.otwOnly;
+            
+            const dot = document.getElementById("otw-dot");
+            if (activeFilters.otwOnly) {
+                otwToggle.className = "w-9 h-5 bg-purple rounded-full relative transition-all border border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500";
+                dot.className = "absolute left-4 top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-all";
+            } else {
+                otwToggle.className = "w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700 focus:outline-none focus:ring-1 focus:ring-purple-500";
+                dot.className = "absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all";
+            }
+            applyFilters();
+        });
+
+        // Sorting
+        sortSelect.addEventListener("change", (e) => {
+            activeFilters.sortBy = e.target.value;
+            // Sort original pool and re-render
+            if (activeFilters.sortBy === "rank") {
+                candidatePool.sort((a, b) => a.rank - b.rank);
+            } else if (activeFilters.sortBy === "experience") {
+                candidatePool.sort((a, b) => b.experience - a.experience);
+            } else if (activeFilters.sortBy === "notice") {
+                candidatePool.sort((a, b) => a.notice_period_days - b.notice_period_days);
+            }
+            renderCandidateList(candidatePool);
+            applyFilters();
+        });
+
+        // Close details drawer
+        closeDrawerBtn.addEventListener("click", closeDrawer);
+        document.getElementById('drawer-overlay').addEventListener("click", closeDrawer);
+        
+        // Global escape key handler to close drawer
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                closeDrawer();
+            }
+        });
+        
+        // Clear all filters handlers
+        document.getElementById("clear-all-filters-btn").addEventListener("click", clearAllFilters);
+        document.getElementById("empty-clear-btn").addEventListener("click", clearAllFilters);
+        
+        // Export CSV button
+        exportBtn.addEventListener("click", () => {
+            window.location.href = "/api/candidates/export";
+        });
+        
+        // Mobile Navigation: Filters Overlay triggers
+        const mobileNavFiltersBtn = document.getElementById("mobile-nav-filters");
+        const mobileFiltersModal = document.getElementById("mobile-filters-modal");
+        const closeMobileFiltersBtn = document.getElementById("close-mobile-filters");
+        const mobileFiltersContainer = document.getElementById("mobile-filters-container");
+        
+        mobileNavFiltersBtn.addEventListener("click", () => {
+            // Copy sidebar content to mobile filters container
+            const sidebar = document.querySelector("aside");
+            // Pull the inner content block (filters only)
+            const filtersBlock = sidebar.querySelector(".px-6.flex.flex-col").cloneNode(true);
+            const sortBlock = sidebar.querySelector(".mt-4.border-t").cloneNode(true);
+            
+            mobileFiltersContainer.innerHTML = "";
+            mobileFiltersContainer.appendChild(filtersBlock);
+            mobileFiltersContainer.appendChild(sortBlock);
+            
+            // Rebind clone elements event handlers
+            const mSlider = mobileFiltersContainer.querySelector("#score-slider");
+            const mLabel = mobileFiltersContainer.querySelector("#score-val-label");
+            const mExpMin = mobileFiltersContainer.querySelector("#exp-min");
+            const mExpMax = mobileFiltersContainer.querySelector("#exp-max");
+            const mNotice = mobileFiltersContainer.querySelector("#notice-select");
+            const mIndia = mobileFiltersContainer.querySelector("#india-toggle");
+            const mOtw = mobileFiltersContainer.querySelector("#otw-toggle");
+            const mSort = mobileFiltersContainer.querySelector("#sort-select");
+            
+            mSlider.value = activeFilters.minScore;
+            mLabel.textContent = `${activeFilters.minScore}%+`;
+            mSlider.addEventListener("input", (e) => {
+                activeFilters.minScore = parseInt(e.target.value);
+                mLabel.textContent = `${e.target.value}%+`;
+                scoreSlider.value = e.target.value;
+                scoreValLabel.textContent = `${e.target.value}%+`;
+                calculateAndDisplayCount();
+                debouncedApplyFilters();
+            });
+            
+            mExpMin.value = activeFilters.minExp === null ? "" : activeFilters.minExp;
+            mExpMin.addEventListener("input", (e) => {
+                activeFilters.minExp = e.target.value === "" ? null : parseFloat(e.target.value);
+                expMinInput.value = e.target.value;
+                applyFilters();
+            });
+            
+            mExpMax.value = activeFilters.maxExp === null ? "" : activeFilters.maxExp;
+            mExpMax.addEventListener("input", (e) => {
+                activeFilters.maxExp = e.target.value === "" ? null : parseFloat(e.target.value);
+                expMaxInput.value = e.target.value;
+                applyFilters();
+            });
+            
+            mNotice.value = activeFilters.noticePeriod;
+            mNotice.addEventListener("change", (e) => {
+                activeFilters.noticePeriod = e.target.value;
+                noticeSelect.value = e.target.value;
+                applyFilters();
+            });
+            
+            // Set styles of toggles based on state
+            const mIndiaDot = mIndia.querySelector("span");
+            if (activeFilters.indiaOnly) {
+                mIndia.className = "w-9 h-5 bg-purple rounded-full relative transition-all border border-purple-500";
+                mIndiaDot.className = "absolute left-4 top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-all";
+            }
+            mIndia.addEventListener("click", () => {
+                indiaToggle.click();
+                if (activeFilters.indiaOnly) {
+                    mIndia.className = "w-9 h-5 bg-purple rounded-full relative transition-all border border-purple-500";
+                    mIndiaDot.className = "absolute left-4 top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-all";
+                } else {
+                    mIndia.className = "w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700";
+                    mIndiaDot.className = "absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all";
+                }
+            });
+            
+            const mOtwDot = mOtw.querySelector("span");
+            if (activeFilters.otwOnly) {
+                mOtw.className = "w-9 h-5 bg-purple rounded-full relative transition-all border border-purple-500";
+                mOtwDot.className = "absolute left-4 top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-all";
+            }
+            mOtw.addEventListener("click", () => {
+                otwToggle.click();
+                if (activeFilters.otwOnly) {
+                    mOtw.className = "w-9 h-5 bg-purple rounded-full relative transition-all border border-purple-500";
+                    mOtwDot.className = "absolute left-4 top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-all";
+                } else {
+                    mOtw.className = "w-9 h-5 bg-navy-800 rounded-full relative transition-all border border-navy-700";
+                    mOtwDot.className = "absolute left-1 top-0.5 w-3.5 h-3.5 bg-slate-400 rounded-full transition-all";
+                }
+            });
+
+            mSort.value = activeFilters.sortBy;
+            mSort.addEventListener("change", (e) => {
+                activeFilters.sortBy = e.target.value;
+                sortSelect.value = e.target.value;
+                
+                if (activeFilters.sortBy === "rank") {
+                    candidatePool.sort((a, b) => a.rank - b.rank);
+                } else if (activeFilters.sortBy === "experience") {
+                    candidatePool.sort((a, b) => b.experience - a.experience);
+                } else if (activeFilters.sortBy === "notice") {
+                    candidatePool.sort((a, b) => a.notice_period_days - b.notice_period_days);
+                }
+                renderCandidateList(candidatePool);
+                applyFilters();
+            });
+
+            mobileFiltersModal.classList.remove("hidden");
+        });
+        
+        closeMobileFiltersBtn.addEventListener("click", () => {
+            mobileFiltersModal.classList.add("hidden");
+        });
+        
+        document.getElementById("mobile-nav-list").addEventListener("click", () => {
+            mobileFiltersModal.classList.add("hidden");
+        });
+    }
+
+    // Initialize App
+    document.addEventListener("DOMContentLoaded", async () => {
+        wireEvents();
+        await fetchAndPopulateRoles();
+        updateActiveRoleBadge();
+        loadCandidates();
+    });
+</script>
+</body>
+</html>

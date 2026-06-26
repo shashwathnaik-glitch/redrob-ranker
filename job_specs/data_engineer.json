@@ -1,0 +1,47 @@
+{
+  "role": "data_engineer",
+  "title": "Senior Data Engineer",
+  "experience_requirements": {
+    "ideal_min": 5,
+    "ideal_max": 9,
+    "good_min": 4,
+    "good_max": 11,
+    "acceptable_min": 3,
+    "acceptable_max": 13
+  },
+  "required_skills": [
+    "python",
+    "scala",
+    "sql",
+    "spark",
+    "pyspark",
+    "airflow",
+    "snowflake",
+    "bigquery",
+    "kafka",
+    "etl",
+    "elt",
+    "data modeling",
+    "data warehouse"
+  ],
+  "preferred_skills": [
+    "hadoop",
+    "flink",
+    "prefect",
+    "dagster",
+    "redshift",
+    "clickhouse",
+    "rabbitmq",
+    "dbt"
+  ],
+  "scoring_weights": {
+    "title": 0.20,
+    "skill": 0.23,
+    "career": 0.17,
+    "experience": 0.12,
+    "behavioral": 0.10,
+    "location": 0.08,
+    "notice": 0.06,
+    "trust": 0.04
+  }
+}

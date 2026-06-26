@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Candidate Intelligence Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#dae2fd",
+                        "secondary-container": "#dae2fd",
+                        "primary-fixed": "#eaddff",
+                        "primary-fixed-dim": "#d2bbff",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed": "#131b2e",
+                        "surface-container": "#e5eeff",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "secondary": "#565e74",
+                        "on-tertiary-container": "#ffe0cd",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#7b7487",
+                        "on-surface-variant": "#4a4455",
+                        "surface-dim": "#cbdbf5",
+                        "primary": "#630ed4",
+                        "on-primary-container": "#ede0ff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#5c647a",
+                        "on-background": "#0b1c30",
+                        "surface-variant": "#d3e4fe",
+                        "surface": "#f8f9ff",
+                        "tertiary-container": "#a15100",
+                        "on-tertiary-fixed": "#301400",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#0b1c30",
+                        "on-primary-fixed": "#25005a",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdcc6",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "tertiary": "#7d3d00",
+                        "surface-container-high": "#dce9ff",
+                        "primary-container": "#7c3aed",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "inverse-surface": "#213145",
+                        "surface-bright": "#f8f9ff",
+                        "surface-tint": "#732ee4",
+                        "inverse-primary": "#d2bbff",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "surface-container-highest": "#d3e4fe",
+                        "outline-variant": "#ccc3d8",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-lg": "1.5rem",
+                        "gutter": "1rem",
+                        "margin-page": "2rem",
+                        "container-max": "1440px",
+                        "stack-md": "1rem",
+                        "sidebar-width": "260px",
+                        "stack-sm": "0.5rem"
+                    },
+                    "fontFamily": {
+                        "label-xs": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-xs": ["11px", {"lineHeight": "14px", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "display": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9ff; overflow-x: hidden; }
+        .drawer-shadow { box-shadow: -15px 0 50px rgba(11, 28, 48, 0.15); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc3d8; border-radius: 10px; }
+        .elevated-card { 
+            background: #fdfdff; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+        }
+        .elevated-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(99, 14, 212, 0.1), 0 10px 10px -5px rgba(99, 14, 212, 0.04);
+        }
+        .gradient-progress {
+            background: linear-gradient(90deg, #630ed4 0%, #a855f7 100%);
+        }
+        .gradient-badge {
+            background: linear-gradient(135deg, #630ed4 0%, #7c3aed 100%);
+        }
+        .rank-glow {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            border: 2px solid #ffd700;
+        }
+        .radial-progress-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .glow-shader {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(99, 14, 212, 0.15) 0%, transparent 70%);
+            animation: pulse-glow 3s infinite ease-in-out;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-[260px] bg-inverse-surface flex flex-col py-stack-lg hidden md:flex z-40">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<h1 class="font-display text-headline-sm text-on-primary font-extrabold tracking-tight">Redrob CI</h1>
+<p class="text-label-xs text-outline-variant uppercase tracking-widest font-bold opacity-70">Intelligence</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="px-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/80 hover:text-white mx-2 my-1 hover:bg-white/5 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary bg-primary rounded-lg mx-2 my-1 shadow-lg shadow-primary/20 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+<span class="font-body-md font-semibold">Candidates</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/80 hover:text-white mx-2 my-1 hover:bg-white/5 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">bolt</span>
+<span class="font-body-md">Skills</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/80 hover:text-white mx-2 my-1 hover:bg-white/5 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-md">AI Insights</span>
+</a>
+</div>
+</nav>
+<div class="mt-auto px-4">
+<div class="bg-white/5 rounded-xl p-4 flex items-center gap-3 border border-white/10">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden ring-2 ring-primary/20">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-hw5VOJa49kDJBGYWqYnK_g0Uf6oT87Xx9xIub0M-gUQauoExfLCiDr8uxDnjCmVO7x0A36zyUbTBeCvGHbq3V5DnvI6GsrN08_HXJfzwb7_3_UzMa0Hm7fX8dKkcqgMtFL56CH7HiSiKH93oQ5McGLTMytj7rnS6CwRaWPacEZyiwRVlGlj3cVudmuxCnOqPt32Ln4jmeLJs6H5CH1R-pi5-cttjsT76x0acKta2fmYTBrEO6AbdfkOlnLEziXq9oJHKg4ugxew"/>
+</div>
+<div class="overflow-hidden">
+<p class="font-label-md text-white truncate">Admin User</p>
+<p class="text-label-xs text-outline-variant truncate">Standard Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-0 md:ml-[260px] bg-background p-margin-page relative overflow-y-auto">
+<header class="flex justify-between items-center mb-10">
+<h2 class="font-display text-display text-on-surface">Candidate Pipeline</h2>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-label-md hover:opacity-90 transition-all shadow-lg shadow-primary/25 active:scale-95">
+                Add New Candidate
+            </button>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="candidate-list">
+<!-- Dynamically populated -->
+<div class="col-span-full h-24 bg-white/50 rounded-xl border border-dashed border-outline-variant flex items-center justify-center animate-pulse">
+<p class="text-outline-variant font-label-md">Loading intelligence data...</p>
+</div>
+</div>
+</main>
+<!-- Slide-in Panel -->
+<div class="fixed right-0 top-0 h-full w-full md:w-[520px] bg-white z-50 drawer-shadow flex flex-col transform transition-transform duration-500 translate-x-full" id="candidate-drawer">
+<header class="flex flex-col border-b border-outline-variant/30 bg-[#fdfdff] sticky top-0 z-10 p-6">
+<div class="flex justify-between items-center mb-8">
+<button class="text-on-surface-variant hover:text-primary transition-all p-2 hover:bg-primary/5 rounded-full" id="close-drawer">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex gap-2">
+<button class="text-label-md text-primary font-bold py-2 px-6 bg-primary/5 hover:bg-primary/10 transition-colors rounded-xl">View Resume</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-6">
+<div class="w-24 h-24 rounded-2xl border-4 border-primary-container p-1 relative shadow-2xl shadow-primary/10">
+<img class="w-full h-full rounded-xl object-cover" id="detail-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbnSvSViKFzJjj1p0nwEJq5aGp5UeGDkDXaZ4DCMmEfqM7vypL4FuZbidgAk57YTaMxGZLu9i1Gochxd6Vts7mdjxqlpPPrZV68cxL2bJL7SRqjDiHS_CWboL73Aqkh5kZZRMbuYsq_ghNGaItA4wc3m6NDzUoztgoUaC3kZUmHbxrMA7dCU-y8NAB9ZUmkMKbGGRS_AV49n2ixik8m3zEceE5_9YKEBfUcZ0RIGLwcoGHrjHa7y49V4_eaEh5UgxRmmiHoix-G10"/>
+<div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[16px] text-white" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<div>
+<h3 class="font-display text-[36px] leading-tight text-on-surface font-extrabold tracking-tight" id="detail-name">Marcus Chen</h3>
+<p class="text-body-lg text-on-surface-variant/80 font-medium mt-1" id="detail-title">Lead Software Engineer at TechFlow</p>
+<div class="flex items-center gap-1.5 mt-2 text-primary font-semibold">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="text-label-md" id="detail-location">San Francisco, CA</span>
+</div>
+</div>
+</div>
+<!-- Massive Score Focal Point -->
+<div class="flex flex-col items-center radial-progress-container">
+<div class="glow-shader"></div>
+<div class="relative w-28 h-28 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90 drop-shadow-lg">
+<circle class="text-surface-container-highest" cx="56" cy="56" fill="transparent" r="48" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary transition-all duration-1000 ease-out" cx="56" cy="56" fill="transparent" id="progress-ring" r="48" stroke="url(#gradient-score)" stroke-dasharray="301.59" stroke-dashoffset="301.59" stroke-linecap="round" stroke-width="8"></circle>
+<defs>
+<lineargradient id="gradient-score" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#630ed4"></stop>
+<stop offset="100%" stop-color="#a855f7"></stop>
+</lineargradient>
+</defs>
+</svg>
+<span class="absolute font-display text-[32px] text-primary font-black tracking-tighter" id="detail-score">94%</span>
+</div>
+<span class="text-label-xs font-black text-primary/60 mt-2 uppercase tracking-[0.2em]">Match</span>
+</div>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-10 bg-[#fdfdff]">
+<section class="elevated-card p-6 rounded-2xl border border-outline-variant/10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">verified</span>
+</div>
+<h4 class="font-label-md text-primary font-black uppercase tracking-widest">Why this rank</h4>
+</div>
+<p class="text-body-lg text-on-surface-variant leading-relaxed font-medium">
+                    Top-tier technical alignment with specialized experience in distributed systems and a perfect skill match for the core stack.
+                </p>
+</section>
+<section>
+<h4 class="font-label-md text-outline font-black uppercase mb-6 tracking-[0.15em]">Signal Breakdown</h4>
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between text-label-md">
+<span class="text-on-surface-variant font-bold">Title fit</span>
+<span class="text-primary font-black">100%</span>
+</div>
+<div class="h-2.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full gradient-progress w-full rounded-full"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-label-md">
+<span class="text-on-surface-variant font-bold">Skill fit</span>
+<span class="text-primary font-black">95%</span>
+</div>
+<div class="h-2.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full gradient-progress w-[95%] rounded-full"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-8 pt-4">
+<div class="space-y-2">
+<p class="text-label-xs text-outline uppercase font-black">Experience</p>
+<div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full gradient-progress w-[88%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<p class="text-label-xs text-outline uppercase font-black">Behavioral</p>
+<div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full gradient-progress w-[92%]"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h4 class="font-label-md text-outline font-black uppercase mb-6 tracking-[0.15em]">Skills Matrix</h4>
+<div class="flex flex-wrap gap-3" id="detail-skills">
+<!-- Dynamic Skills -->
+</div>
+</section>
+<section class="bg-tertiary-fixed/30 text-on-tertiary-fixed p-6 rounded-2xl border border-tertiary/10 flex items-start gap-4">
+<span class="material-symbols-outlined text-[28px] text-tertiary">warning</span>
+<div>
+<p class="font-label-md font-black uppercase mb-1">Risk Assessment</p>
+<p class="text-body-md font-medium opacity-90">Potential notice period overlap. Marcus indicated a 3-month transition phase.</p>
+</div>
+</section>
+<div class="h-24"></div>
+</div>
+<footer class="mt-auto border-t border-outline-variant/30 bg-white p-8 sticky bottom-0 z-10">
+<div class="flex items-center gap-4">
+<button class="flex-1 gradient-badge text-white h-14 rounded-2xl font-display text-lg font-bold hover:opacity-95 transition-all shadow-xl shadow-primary/30 active:scale-95 flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    Shortlist
+                </button>
+<button class="w-14 h-14 border-2 border-error/20 text-error rounded-2xl font-bold hover:bg-error/5 transition-all active:scale-95 flex items-center justify-center group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">cancel</span>
+</button>
+</div>
+</footer>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const drawer = document.getElementById('candidate-drawer');
+            const closeBtn = document.getElementById('close-drawer');
+            const listContainer = document.getElementById('candidate-list');
+            const progressRing = document.getElementById('progress-ring');
+
+            // Mock API data fetch simulation
+            const fetchCandidates = async () => {
+                // In a real app: const response = await fetch('/api/candidates');
+                // const data = await response.json();
+                
+                // Simulating response
+                return [
+                    {
+                        id: 1,
+                        name: "Marcus Chen",
+                        title: "Lead Software Engineer",
+                        company: "TechFlow",
+                        location: "San Francisco, CA",
+                        score: 94,
+                        rank: 1,
+                        avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuDbnSvSViKFzJjj1p0nwEJq5aGp5UeGDkDXaZ4DCMmEfqM7vypL4FuZbidgAk57YTaMxGZLu9i1Gochxd6Vts7mdjxqlpPPrZV68cxL2bJL7SRqjDiHS_CWboL73Aqkh5kZZRMbuYsq_ghNGaItA4wc3m6NDzUoztgoUaC3kZUmHbxrMA7dCU-y8NAB9ZUmkMKbGGRS_AV49n2ixik8m3zEceE5_9YKEBfUcZ0RIGLwcoGHrjHa7y49V4_eaEh5UgxRmmiHoix-G10",
+                        skills: ["React", "Node.js", "TypeScript", "AWS"]
+                    },
+                    {
+                        id: 2,
+                        name: "Sarah Jenkins",
+                        title: "Senior Product Designer",
+                        company: "Pixelate",
+                        location: "New York, NY",
+                        score: 89,
+                        rank: 2,
+                        avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuC-hw5VOJa49kDJBGYWqYnK_g0Uf6oT87Xx9xIub0M-gUQauoExfLCiDr8uxDnjCmVO7x0A36zyUbTBeCvGHbq3V5DnvI6GsrN08_HXJfzwb7_3_UzMa0Hm7fX8dKkcqgMtFL56CH7HiSiKH93oQ5McGLTMytj7rnS6CwRaWPacEZyiwRVlGlj3cVudmuxCnOqPt32Ln4jmeLJs6H5CH1R-pi5-cttjsT76x0acKta2fmYTBrEO6AbdfkOlnLEziXq9oJHKg4ugxew",
+                        skills: ["Figma", "Design Systems", "Prototyping", "React"]
+                    },
+                    {
+                        id: 3,
+                        name: "David Park",
+                        title: "DevOps Architect",
+                        company: "CloudScale",
+                        location: "Seattle, WA",
+                        score: 82,
+                        rank: 12,
+                        avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuC-hw5VOJa49kDJBGYWqYnK_g0Uf6oT87Xx9xIub0M-gUQauoExfLCiDr8uxDnjCmVO7x0A36zyUbTBeCvGHbq3V5DnvI6GsrN08_HXJfzwb7_3_UzMa0Hm7fX8dKkcqgMtFL56CH7HiSiKH93oQ5McGLTMytj7rnS6CwRaWPacEZyiwRVlGlj3cVudmuxCnOqPt32Ln4jmeLJs6H5CH1R-pi5-cttjsT76x0acKta2fmYTBrEO6AbdfkOlnLEziXq9oJHKg4ugxew",
+                        skills: ["Kubernetes", "Terraform", "CI/CD", "Go"]
+                    }
+                ];
+            };
+
+            const renderCandidates = async () => {
+                const candidates = await fetchCandidates();
+                listContainer.innerHTML = '';
+                
+                candidates.forEach(c => {
+                    const card = document.createElement('div');
+                    card.className = `elevated-card p-6 rounded-2xl border border-outline-variant/10 cursor-pointer ${c.rank <= 10 ? 'rank-glow' : ''}`;
+                    card.innerHTML = `
+                        <div class="flex items-center gap-4 mb-4">
+                            <img src="${c.avatar}" class="w-12 h-12 rounded-xl object-cover shadow-md">
+                            <div>
+                                <h4 class="font-display text-lg font-bold text-on-surface">${c.name}</h4>
+                                <p class="text-body-sm text-outline font-medium">${c.title}</p>
+                            </div>
+                            <div class="ml-auto text-right">
+                                <p class="font-display text-2xl font-black text-primary tracking-tighter">${c.score}%</p>
+                                <p class="text-[10px] uppercase font-black text-outline tracking-wider">Score</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${c.skills.map(s => `<span class="px-2 py-0.5 rounded-lg bg-primary/5 text-primary text-label-xs font-bold">${s}</span>`).join('')}
+                        </div>
+                    `;
+                    card.onclick = () => openDrawer(c);
+                    listContainer.appendChild(card);
+                });
+            };
+
+            const openDrawer = (candidate) => {
+                document.getElementById('detail-name').innerText = candidate.name;
+                document.getElementById('detail-title').innerText = `${candidate.title} at ${candidate.company}`;
+                document.getElementById('detail-location').innerText = candidate.location;
+                document.getElementById('detail-score').innerText = `${candidate.score}%`;
+                document.getElementById('detail-avatar').src = candidate.avatar;
+                
+                const skillsList = document.getElementById('detail-skills');
+                skillsList.innerHTML = candidate.skills.map(s => `
+                    <span class="gradient-badge text-white px-4 py-1.5 rounded-xl text-label-md font-bold shadow-md shadow-primary/10">
+                        ${s}
+                    </span>
+                `).join('');
+
+                // Trigger ring animation
+                const radius = 48;
+                const circumference = 2 * Math.PI * radius;
+                const offset = circumference - (candidate.score / 100) * circumference;
+                progressRing.style.strokeDashoffset = offset;
+
+                drawer.classList.remove('translate-x-full');
+            };
+
+            closeBtn.addEventListener('click', () => {
+                drawer.classList.add('translate-x-full');
+                progressRing.style.strokeDashoffset = 301.59;
+            });
+
+            renderCandidates();
+        });
+    </script>
+</body></html>
