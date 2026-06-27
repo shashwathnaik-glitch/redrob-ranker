@@ -3,7 +3,10 @@
 A high-performance Python-based recruitment screening tool designed to process up to 100,000 candidate profiles in under 5 minutes on a standard CPU. It evaluates candidates dynamically against custom job description specifications (JDs), detects suspicious profiles (such as keyword stuffers and honeypot accounts), and renders findings on a premium recruiter dashboard.
 
 ---
+## Project Overview
+Redrob Candidate Intelligence Dashboard is an AI-powered recruiter tool that ranks and filters candidates based on multi-role job specifications using a custom scoring engine.
 
+---
 ## Tech Stack Used
 
 - **Backend**: FastAPI (Python 3.10+)
