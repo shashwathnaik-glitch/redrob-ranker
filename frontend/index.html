@@ -1957,6 +1957,19 @@
 
                     // Mark as shortlisted
                     localStorage.setItem(`cand_status_${activeCandidateId}`, "Shortlisted");
+                    // Sync pipeline strip to Shortlisted
+                    localStorage.setItem(`cand_pipeline_${activeCandidateId}`, "Shortlisted");
+                    const pipelineStrip = document.getElementById("pipeline-status-strip");
+                    if (pipelineStrip) {
+                        const buttons = pipelineStrip.querySelectorAll("button");
+                        buttons.forEach(btn => {
+                            if (btn.textContent.trim() === "Shortlisted") {
+                                btn.className = "text-[10px] font-bold py-1.5 rounded-lg text-center transition-all cursor-pointer border focus:outline-none bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/20";
+                            } else {
+                                btn.className = "text-[10px] font-bold py-1.5 rounded-lg text-center transition-all cursor-pointer border focus:outline-none bg-transparent border-navy-700 text-slate-400 hover:text-white hover:border-navy-600";
+                            }
+                        });
+                    }
 
                     // Show toast
                     showToast(`${cand.name} shortlisted successfully!`, "success");
@@ -1989,6 +2002,19 @@
                     showConfirmModal(cand.name, () => {
                         // Mark as rejected
                         localStorage.setItem(`cand_status_${activeCandidateId}`, "Rejected");
+                        // Sync pipeline strip to Rejected
+                        localStorage.setItem(`cand_pipeline_${activeCandidateId}`, "Rejected");
+                        const pipelineStripR = document.getElementById("pipeline-status-strip");
+                        if (pipelineStripR) {
+                            const buttons = pipelineStripR.querySelectorAll("button");
+                            buttons.forEach(btn => {
+                                if (btn.textContent.trim() === "Rejected") {
+                                    btn.className = "text-[10px] font-bold py-1.5 rounded-lg text-center transition-all cursor-pointer border focus:outline-none bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/20";
+                                } else {
+                                    btn.className = "text-[10px] font-bold py-1.5 rounded-lg text-center transition-all cursor-pointer border focus:outline-none bg-transparent border-navy-700 text-slate-400 hover:text-white hover:border-navy-600";
+                                }
+                            });
+                        }
 
                         // Show toast
                         showToast(`${cand.name} has been rejected.`, "success");
